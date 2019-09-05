@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">State Manager POC</string>
+    <string name="action_settings">Settings</string>
+    <string name="enter_a_string_id">Enter a String ID</string>
+    <string name="boolean_value">Boolean value</string>
+    <string name="enter_an_integer_value">Enter an Integer value</string>
+</resources>
