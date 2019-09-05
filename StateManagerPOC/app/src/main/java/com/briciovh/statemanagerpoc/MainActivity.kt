@@ -8,7 +8,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -40,9 +42,9 @@ class MainActivity : AppCompatActivity(), MainView {
 
         })
 
-        integer_input.editText?.addTextChangedListener(object : TextWatcher{
+        integer_input.editText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                p0?.toString()?.toInt()?.let { presenter.onIntValueChanged(it)}
+                p0?.toString()?.toInt()?.let { presenter.onIntValueChanged(it) }
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -60,8 +62,7 @@ class MainActivity : AppCompatActivity(), MainView {
         }
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            presenter.onSaveClicked()
         }
 
         enableSaveButton(false)
@@ -111,8 +112,27 @@ class MainActivity : AppCompatActivity(), MainView {
     }
 
     override fun refreshObjectInfo(currentObject: DataObject) {
-        id_input.editText?.setText(currentObject.objectID )
+        id_input.editText?.setText(currentObject.objectID)
         only_switch.isChecked = currentObject.objectBoolean
         integer_input.editText?.setText(currentObject.intValue.toString())
+    }
+
+    override fun onBackPressed() {
+        if(fab.isVisible) {
+            AlertDialog.Builder(this)
+                .setTitle("Changes not saved")
+                .setMessage("Do you want to discard changes?")
+                .setPositiveButton("Discard") { dialogInterface, i ->
+                    presenter.onChangesDiscarded()
+                    dialogInterface.dismiss()
+                }
+                .setNegativeButton("Back to edition") { dialogInterface, i ->
+                    dialogInterface.dismiss()
+                }
+                .create().show()
+        }
+        else{
+            super.onBackPressed()
+        }
     }
 }

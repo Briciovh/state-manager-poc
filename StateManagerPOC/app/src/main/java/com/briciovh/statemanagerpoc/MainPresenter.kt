@@ -1,6 +1,7 @@
 package com.briciovh.statemanagerpoc
 
 import android.content.Context
+import android.os.Handler
 import kotlin.properties.Delegates
 
 class MainPresenter(val view: MainView, val context: Context) {
@@ -19,7 +20,7 @@ class MainPresenter(val view: MainView, val context: Context) {
     private fun renderViewState(newState: ObjectState, oldState: ObjectState) {
         when (newState) {
             is ObjectState.SynchronizedState -> {
-                view.refreshObjectInfo(newState.currentObject)
+                view.refreshObjectInfo(newState.synchronizedObject)
                 view.enableSaveButton(false)
             }
             is ObjectState.ChangedState -> view.enableSaveButton(true)
@@ -50,5 +51,23 @@ class MainPresenter(val view: MainView, val context: Context) {
     fun onIntValueChanged(newInteger: Int) {
         changedObject.intValue = newInteger
         currentState = currentState.consumeAction(ObjectAction.ObjectChanged(changedObject))
+    }
+
+    fun onChangesDiscarded(){
+        currentState = currentState.consumeAction(ObjectAction.ChangesDiscarded(changedObject))
+    }
+
+    fun onSaveClicked(){
+        currentState = currentState.consumeAction(ObjectAction.SaveClicked(changedObject))
+        performSave()
+
+    }
+
+    fun performSave(){
+        val handler = Handler()
+        val runnable = Runnable {
+            currentState = currentState.consumeAction(ObjectAction.ServerSuccess(changedObject))
+        }
+        handler.postDelayed(runnable, 3000)
     }
 }

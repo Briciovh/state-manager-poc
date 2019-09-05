@@ -1,5 +1,7 @@
 package com.briciovh.statemanagerpoc
 
+import android.util.Log
+
 interface ObjectState {
     fun consumeAction(action: ObjectAction): ObjectState
 
@@ -17,6 +19,7 @@ interface ObjectState {
     class ChangedState(val currentObject: DataObject) : ObjectState {
         override fun consumeAction(action: ObjectAction): ObjectState {
             return when (action) {
+                is ObjectAction.ObjectChanged -> ChangedState(currentObject)
                 is ObjectAction.ChangesDiscarded -> SynchronizedState(currentObject)
                 is ObjectAction.SaveClicked -> LoadingState(currentObject)
                 else -> throw IllegalStateException("Invalid $action")
